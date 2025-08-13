@@ -34,7 +34,12 @@ public class Role {
     @ManyToMany(mappedBy = "roles")
     Set<User> users;
 
-    @ManyToMany
+    @ManyToMany(fetch = FetchType.EAGER, cascade = {CascadeType.PERSIST, CascadeType.MERGE})
+            @JoinTable(
+                    name = "role_permissions",
+                    joinColumns = @JoinColumn(name = "role_id"),
+                    inverseJoinColumns = @JoinColumn(name = "permission_id")
+            )
     Set<Permission> permissions;
 
     @PrePersist

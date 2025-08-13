@@ -35,17 +35,21 @@ public class UserService {
     UserMapper userMapper;
     PasswordEncoder passwordEncoder;
 
+
     public UserResponse createUser(UserCreateRequest userCreateRequest){
         log.info("Start creating user with username: {} , {}", userCreateRequest.getUsername() , userCreateRequest.getEmail());
 
         try {
             User user = userMapper.toUserEntity(userCreateRequest);
             user.setPasswordHash(passwordEncoder.encode(userCreateRequest.getPassword()));
-            Role userRole = roleRepository.findByRoleName(PredefinedRole.USER_ROLE)
+            Role userRole = roleRepository.findByRoleNameWithPermissions(PredefinedRole.USER_ROLE)
                             .orElseThrow(() -> {
                                 log.error("User role {} not found", PredefinedRole.USER_ROLE);
                                 return new AppException(ErrorCode.ROLE_NOT_FOUND);
                             });
+            if(userRole.getRoleName().isEmpty()) {
+                userRole.setRoleName("USER");
+            }
             user.setRoles(new HashSet<>(Collections.singletonList(userRole)));
             user.setEmail(userCreateRequest.getEmail());
             user.setIsActive(true);

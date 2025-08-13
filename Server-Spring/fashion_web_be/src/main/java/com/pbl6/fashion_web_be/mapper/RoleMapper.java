@@ -6,9 +6,13 @@ import com.pbl6.fashion_web_be.entity.Role;
 import org.mapstruct.Mapper;
 import org.mapstruct.Mapping;
 
-@Mapper(componentModel = "spring")
+@Mapper(componentModel = "spring", uses = {PermissionMapper.class})
 public interface RoleMapper {
+
     @Mapping(target = "permissions", ignore = true)
     Role toRoleEntity(RoleRequest roleRequest);
+
+    @Mapping(source = "roleName", target = "roleName")
+    @Mapping(source = "permissions", target = "permissions")
     RoleResponse toRoleResponse(Role role);
 }
