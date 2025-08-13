@@ -13,14 +13,17 @@ spring:
     properties:
       hibernate:
         format_sql: true
+  main:
+    allow-bean-definition-overriding: true
+  jwt:
+    signerKey: 8puVMNg/6a1Lnb2ZhuqtwdcVaRW5tqZND6J4Y9vQ+/jG5kKMwVVtPGNKXgai/dxN
+    expiration: 3600
+    refreshable-duration: 36000
+    issuer: auth-service
 
 server:
   port: 8080
   servlet:
     context-path: /api
 
-jwt:
-  signerKey: 8puVMNg/6a1Lnb2ZhuqtwdcVaRW5tqZND6J4Y9vQ+/jG5kKMwVVtPGNKXgai/dxN
-  expiration: 3600
-  refreshable-duration: 36000
-  issuer: auth-service
+

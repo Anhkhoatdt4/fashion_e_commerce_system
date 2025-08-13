@@ -31,8 +31,11 @@ public class Role {
     @Column(name = "created_at")
     LocalDateTime createdAt;
 
-    @OneToMany(mappedBy = "role", cascade = CascadeType.ALL, fetch = FetchType.LAZY)
-    Set<UserRole> userRoles;
+    @ManyToMany(mappedBy = "roles")
+    Set<User> users;
+
+    @ManyToMany
+    Set<Permission> permissions;
 
     @PrePersist
     protected void onCreate() {

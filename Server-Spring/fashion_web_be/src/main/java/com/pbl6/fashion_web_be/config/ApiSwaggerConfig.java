@@ -11,7 +11,7 @@ import org.springframework.context.annotation.Configuration;
 import java.util.List;
 
 @Configuration
-public class SwaggerConfig {
+public class ApiSwaggerConfig {
     @Bean
     public OpenAPI swaggerConfig(){
         return new OpenAPI().info(

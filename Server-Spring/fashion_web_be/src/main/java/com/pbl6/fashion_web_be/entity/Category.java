@@ -15,8 +15,11 @@ import java.util.UUID;
 @FieldDefaults(level = AccessLevel.PRIVATE)
 @EqualsAndHashCode(exclude = {"products", "subcategories"})
 @ToString(exclude = {"products", "subcategories"})
+@AllArgsConstructor
+@NoArgsConstructor
 public class Category {
-    @GeneratedValue
+    @Id
+    @GeneratedValue(strategy = GenerationType.UUID)
     UUID categoryId;
 
     @Column(name = "category_name", nullable = false, length = 100)
