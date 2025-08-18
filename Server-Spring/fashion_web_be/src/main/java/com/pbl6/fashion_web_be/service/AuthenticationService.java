@@ -42,18 +42,18 @@ public class AuthenticationService {
     private final UserRepository userRepository;
     private final InvalidatedTokenRepository invalidatedTokenRepository;
 
-    public String generateToken(String username){
-        User user = userRepository.findByUsername(username)
+    public String generateToken(String email){
+        User user = userRepository.findByEmail(email)
                 .orElseThrow(() -> new UsernameNotFoundException("User not found"));
         return Jwts.builder().issuer(ISSUER)
-                .subject(username)
+                .subject(email)
                 .issuedAt(new Date())
                 .expiration(generateExpirationDate())
                 .signWith(getSigningKey())
                 .claim("username", user.getUsername())
                 .claim("userId", user.getUserId())
                 .claim("roles", user.getRoles().stream().map(role -> "ROLE_" + role.getRoleName()).toList())
-                .claim("scope", buildScope(userRepository.findByUsername(username).orElseThrow(() -> new UsernameNotFoundException("User not found")))) // Thêm claim tùy chỉnh nếu cần
+                .claim("scope", buildScope(userRepository.findByEmail(email).orElseThrow(() -> new UsernameNotFoundException("User not found")))) // Thêm claim tùy chỉnh nếu cần
                 .compact(); // bien token thanh String jwt ( header + payload + signature)
 
     }
@@ -175,9 +175,9 @@ public class AuthenticationService {
                 .compact();
     }
 
-    public TokenResponse generateTokenAndRefreshToken(String username) {
-        String token = generateToken(username);
-        String refreshToken = generateRefreshToken(username);
+    public TokenResponse generateTokenAndRefreshToken(String email) {
+        String token = generateToken(email);
+        String refreshToken = generateRefreshToken(email);
         return new TokenResponse(token, refreshToken,
                 getExpirationDate(token), getExpirationDate(refreshToken));
     }

@@ -40,7 +40,7 @@ public class AuthenticationController {
 
     @PostMapping("/login")
     public ApiResponse<TokenResponse> login(@RequestBody AuthenticationRequest authenticationRequest) {
-        TokenResponse tokenResponse = authenticationService.generateTokenAndRefreshToken(authenticationRequest.getUsername());
+        TokenResponse tokenResponse = authenticationService.generateTokenAndRefreshToken(authenticationRequest.getEmail());
         TokenResponse authenticationResponse = TokenResponse.builder()
                 .token(tokenResponse.getToken())
                 .refreshToken(tokenResponse.getRefreshToken())

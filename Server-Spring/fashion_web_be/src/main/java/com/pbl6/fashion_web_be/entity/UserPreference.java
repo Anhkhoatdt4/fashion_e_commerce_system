@@ -62,3 +62,6 @@ public class UserPreference {
         updatedAt = LocalDateTime.now();
     }
 }
+
+// luu cac tuy chon ca nhan cua user như size, mau sac, phong cach, ngan sach, thiet lap thong bao
+// có thể dùng để tích hợp với các hệ thống gợi ý sản phẩm, thông báo khuyến mãi, v.v.

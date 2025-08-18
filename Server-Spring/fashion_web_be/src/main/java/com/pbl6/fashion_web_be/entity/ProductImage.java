@@ -1,9 +1,7 @@
 package com.pbl6.fashion_web_be.entity;
 
 import jakarta.persistence.*;
-import lombok.Data;
-import lombok.EqualsAndHashCode;
-import lombok.ToString;
+import lombok.*;
 
 import java.time.LocalDateTime;
 
@@ -12,6 +10,9 @@ import java.time.LocalDateTime;
 @Data
 @EqualsAndHashCode(exclude = "product")
 @ToString(exclude = "product")
+@Builder
+@AllArgsConstructor
+@NoArgsConstructor
 public class ProductImage {
 
     @Id

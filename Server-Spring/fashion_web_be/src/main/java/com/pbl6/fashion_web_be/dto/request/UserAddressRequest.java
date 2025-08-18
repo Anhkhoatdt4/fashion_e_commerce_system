@@ -1,0 +1,22 @@
+package com.pbl6.fashion_web_be.dto.request;
+
+import lombok.*;
+import java.util.UUID;
+
+@Data
+@Builder
+@AllArgsConstructor
+@NoArgsConstructor
+public class UserAddressRequest {
+    private UUID userId;
+    private String recipientName;
+    private String phone;
+    private String addressLine1;
+    private String addressLine2;
+    private String city;
+    private String stateProvince;
+    private String postalCode;
+    private String country;
+    private Boolean isDefault = false;
+    private String addressType;
+}
