@@ -27,7 +27,7 @@ public class CategoryController {
                 .build();
     }
 
-    @PutMapping("/{categoryId")
+    @PutMapping("/{categoryId}")
     public ApiResponse<CategoryResponse> updateCategory(@PathVariable UUID categoryId,
                                                         @RequestBody CategoryRequest categoryRequest) {
         return ApiResponse.<CategoryResponse>builder()

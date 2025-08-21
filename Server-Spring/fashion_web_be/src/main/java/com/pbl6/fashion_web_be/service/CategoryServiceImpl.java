@@ -10,6 +10,7 @@ import lombok.RequiredArgsConstructor;
 import org.springframework.stereotype.Service;
 
 import java.util.List;
+import java.util.Optional;
 import java.util.UUID;
 import java.util.stream.Collectors;
 
@@ -28,6 +29,24 @@ public class CategoryServiceImpl implements CategoryService {
             parentCategory = categoryRepository.findById(request.getParentCategoryId())
                     .orElseThrow(() -> new RuntimeException("Parent category not found"));
         }
+        List<Category> siblingCategories;
+        if (parentCategory == null) {
+            siblingCategories = categoryRepository.findByParentCategoryIsNullOrderBySortOrderAsc();
+        } else {
+            siblingCategories = categoryRepository.findByParentCategoryOrderBySortOrderAsc(parentCategory);
+        }
+        Integer sortOrderToSet;
+        if (request.getSortOrder() == null){
+            sortOrderToSet = siblingCategories.size() + 1;
+        } else {
+            boolean isExistingSortOrder = siblingCategories.stream().anyMatch(c -> c.getSortOrder().equals(request.getSortOrder()));
+            if (isExistingSortOrder) {
+                sortOrderToSet = siblingCategories.size() + 1;
+            } else {
+                sortOrderToSet = request.getSortOrder();
+            }
+        }
+        request.setSortOrder(sortOrderToSet);
         Category category = categoryMapper.toCategory(request, parentCategory);
         categoryRepository.save(category);
         return categoryMapper.toCategoryResponse(category);
@@ -37,11 +56,11 @@ public class CategoryServiceImpl implements CategoryService {
     public CategoryResponse updateCategory(UUID categoryId, CategoryRequest request) {
         Category category = categoryRepository.findById(categoryId)
                 .orElseThrow(() -> new RuntimeException("Category not found"));
-        category.setCategoryName(request.getCategoryName());
-        category.setDescription(request.getDescription());
-        category.setImageUrl(request.getImageUrl());
-        category.setIsActive(request.getIsActive());
-        category.setSortOrder(request.getSortOrder());
+        Optional.ofNullable(request.getCategoryName()).ifPresent(category::setCategoryName);
+        Optional.ofNullable(request.getDescription()).ifPresent(category::setDescription);
+        Optional.ofNullable(request.getImageUrl()).ifPresent(category::setImageUrl);
+        Optional.ofNullable(request.getIsActive()).ifPresent(category::setIsActive);
+        Optional.ofNullable(request.getSortOrder()).ifPresent(category::setSortOrder);
         if (request.getParentCategoryId() != null) {
             Category parentCategory = categoryRepository.findById(request.getParentCategoryId())
             .orElseThrow(() -> new RuntimeException("Parent category not found"));

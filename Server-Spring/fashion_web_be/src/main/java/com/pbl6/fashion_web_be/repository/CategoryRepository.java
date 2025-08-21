@@ -12,4 +12,8 @@ import java.util.UUID;
 public interface CategoryRepository extends JpaRepository<Category, UUID> {
     Optional<List<Category>> findByParentCategory_CategoryId(UUID parent);
     List<Category> findAllByParentCategory_CategoryId(UUID parentCategoryId);
+    // Lấy danh sách category không có parent (root category), sắp xếp theo sortOrder tăng dần
+    List<Category> findByParentCategoryIsNullOrderBySortOrderAsc();
+    // Lấy ds category cùng parent theo sortOrder tăng dần
+    List<Category> findByParentCategoryOrderBySortOrderAsc(Category parentCategory);
 }

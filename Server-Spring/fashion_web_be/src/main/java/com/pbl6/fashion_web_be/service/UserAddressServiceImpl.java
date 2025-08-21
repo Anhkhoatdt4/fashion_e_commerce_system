@@ -52,7 +52,7 @@ public class UserAddressServiceImpl implements UserAddressService {
 
     @Override
     public List<UserAddressResponse> getAddressesByUser(UUID userId) {
-        return userAddressRepository.findByUserId(userId)
+        return userAddressRepository.findByUserUserId(userId)
                 .stream()
                 .map(userAddressMapper::toUserAddressResponse)
                 .collect(Collectors.toList());

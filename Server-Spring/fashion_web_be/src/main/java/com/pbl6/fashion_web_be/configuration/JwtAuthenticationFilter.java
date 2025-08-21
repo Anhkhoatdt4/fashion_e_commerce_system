@@ -46,7 +46,7 @@ public class JwtAuthenticationFilter extends OncePerRequestFilter {
     protected void doFilterInternal(HttpServletRequest request, HttpServletResponse response, FilterChain filterChain) throws ServletException, IOException {
         final String authorizationHeader = request.getHeader("Authorization");
         final String jwtToken;
-        final String username;
+        final String email; // Đổi từ username thành email
 
         log.info("Starting JWT filter for request URI: {}", request.getRequestURI());
 
@@ -69,15 +69,15 @@ public class JwtAuthenticationFilter extends OncePerRequestFilter {
             jwtToken = authenticationService.getToken(request);
             log.info("Extracted JWT token: {}", jwtToken);
 
-            username = authenticationService.getUsernameFromToken(jwtToken);
-            log.info("Extracted username from token: {}", username);
+            email = authenticationService.getEmailFromToken(jwtToken);
+            log.info("Extracted email from token: {}", email);
 
             Authentication authentication = SecurityContextHolder.getContext().getAuthentication();
-            if (username != null && (authentication == null || !authentication.isAuthenticated())) {
-                log.info("No authentication found in context, loading user details for username: {}", username);
+            if (email != null && (authentication == null || !authentication.isAuthenticated())) {
+                log.info("No authentication found in context, loading user details for email: {}", email);
 
-                UserDetails userDetails = this.userDetailsService.loadUserByUsername(username);
-                log.info("UserDetails loaded: {}", userDetails.getUsername());
+                UserDetails userDetails = this.userDetailsService.loadUserByUsername(email);
+                log.info("UserDetails loaded for email: {}, username: {}", email, userDetails.getUsername());
 
                 if (authenticationService.isTokenValid(jwtToken, userDetails)) {
                     log.info("Token is valid, setting authentication in context");
@@ -86,21 +86,29 @@ public class JwtAuthenticationFilter extends OncePerRequestFilter {
                             userDetails, null, userDetails.getAuthorities());
 
                     authenticationToken.setDetails(userDetails);
+                    log.info("Setting authentication in SecurityContextHolder for email: {}", email);
                     SecurityContextHolder.getContext().setAuthentication(authenticationToken);
+                    log.info("Authentication set successfully for email: {}", email);
                 } else {
-                    log.warn("Token validation failed");
+                    log.warn("Token validation failed for email: {}", email);
                 }
             } else {
-                log.info("Authentication already exists in context or username is null");
+                if (email == null) {
+                    log.info("Email is null from token");
+                } else {
+                    log.info("Authentication already exists in context for email: {}", email);
+                }
             }
             filterChain.doFilter(request, response);
         } catch (ExpiredJwtException e) {
+            log.warn("JWT token expired: {}", e.getMessage());
             response.sendError(HttpServletResponse.SC_UNAUTHORIZED, "Token expired");
         } catch (JwtException e) {
+            log.warn("Invalid JWT token: {}", e.getMessage());
             response.sendError(HttpServletResponse.SC_UNAUTHORIZED, "Invalid token");
         } catch (Exception e) {
+            log.error("Error processing JWT token: {}", e.getMessage(), e);
             response.sendError(HttpServletResponse.SC_UNAUTHORIZED, "Invalid JWT token");
         }
     }
-
 }

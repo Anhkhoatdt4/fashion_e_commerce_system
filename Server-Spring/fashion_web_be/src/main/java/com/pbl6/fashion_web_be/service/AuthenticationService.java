@@ -50,12 +50,12 @@ public class AuthenticationService {
                 .issuedAt(new Date())
                 .expiration(generateExpirationDate())
                 .signWith(getSigningKey())
+                .claim("email", email)
                 .claim("username", user.getUsername())
                 .claim("userId", user.getUserId())
                 .claim("roles", user.getRoles().stream().map(role -> "ROLE_" + role.getRoleName()).toList())
-                .claim("scope", buildScope(userRepository.findByEmail(email).orElseThrow(() -> new UsernameNotFoundException("User not found")))) // Thêm claim tùy chỉnh nếu cần
-                .compact(); // bien token thanh String jwt ( header + payload + signature)
-
+                .claim("scope", buildScope(user))
+                .compact();
     }
 
     private String buildScope(User user){
@@ -79,6 +79,7 @@ public class AuthenticationService {
     private Date generateExpirationDate() {
         return new Date(System.currentTimeMillis() + EXPIRATION_TIME * 1000L);
     }
+
     private Date getExpirationDate(String token){
         try{
             Claims claims = getAllClaimsFromToken(token);
@@ -87,12 +88,12 @@ public class AuthenticationService {
             } else {
                 return null;
             }
-
         } catch (Exception e) {
             e.printStackTrace();
             return null;
         }
     }
+
     public long getExpirationTime(String token) {
         Date expirationDate = getExpirationDate(token);
         if (expirationDate != null) {
@@ -100,25 +101,47 @@ public class AuthenticationService {
         }
         return 0;
     }
+
     private Key getSigningKey() {
         byte[] keyBytes = SIGNER_KEY.getBytes();
         return Keys.hmacShaKeyFor(keyBytes);
     }
+
     public String getToken(HttpServletRequest request){
         String authorizationHeader = request.getHeader("Authorization");
         if (authorizationHeader != null && authorizationHeader.startsWith("Bearer ")) {
-            return authorizationHeader.substring(7); // Loai bo "Bearer "
+            return authorizationHeader.substring(7);
         }
-        return null; // Neu khong co token
+        return null;
     }
 
+    public String getEmailFromToken(String token){
+        String email = null;
+        try {
+            Claims claims = getAllClaimsFromToken(token);
+            if(claims != null){
+                email = claims.getSubject();
+                log.debug("Email from token: {}", email);
+            }
+        } catch (Exception e) {
+            e.printStackTrace();
+            return null;
+        }
+        return email;
+    }
+
+    @Deprecated
     public String getUsernameFromToken(String token){
+        return getEmailFromToken(token);
+    }
+
+    public String getUsernameFromTokenClaims(String token){
         String username = null;
         try {
             Claims claims = getAllClaimsFromToken(token);
             if(claims != null){
-                username = claims.getSubject(); // Lấy tên người dùng từ claims
-                log.debug("Username from token: {}", username);
+                username = (String) claims.get("username");
+                log.debug("Username from token claims: {}", username);
             }
         } catch (Exception e) {
             e.printStackTrace();
@@ -130,16 +153,16 @@ public class AuthenticationService {
     private Claims getAllClaimsFromToken(String token) {
         Claims claims;
         try{
-            claims= Jwts.parser()
-                    .setSigningKey(getSigningKey())  // Cung cấp khóa ký để xác minh chữ ký của token.
+            claims = Jwts.parser()
+                    .setSigningKey(getSigningKey())
                     .build()
-                    .parseClaimsJws(token)  // Giải mã và xác minh chữ ký của JWT.
-                    .getBody();  // Lấy phần thân (claims) của JWT.
+                    .parseClaimsJws(token)
+                    .getBody();
             log.debug("Claims from token: {}", claims);
         }
         catch (Exception e){
             e.printStackTrace();
-            claims =null;
+            claims = null;
         }
         return claims;
     }
@@ -161,16 +184,18 @@ public class AuthenticationService {
     }
 
     public boolean isTokenValid(String authToken, UserDetails userDetails){
-        String username = getUsernameFromToken(authToken);
+        System.out.println("userDetails: " + userDetails.getUsername());
+        String username = getUsernameFromTokenClaims(authToken);
+        log.debug("Validating token for email: {} - {}", username , userDetails.getUsername());
         return (username.equals(userDetails.getUsername()) && !isTokenExpired(authToken));
     }
 
-    public String generateRefreshToken(String username){
+    public String generateRefreshToken(String email){
         return Jwts.builder()
                 .issuer(ISSUER)
-                .subject(username)
+                .subject(email)
                 .issuedAt(new Date())
-                .expiration(new Date(System.currentTimeMillis() + REFRESH_EXPIRATION_TIME * 1000L)) // Thời gian hết hạn gấp đôi
+                .expiration(new Date(System.currentTimeMillis() + REFRESH_EXPIRATION_TIME * 1000L))
                 .signWith(getSigningKey())
                 .compact();
     }
@@ -181,6 +206,7 @@ public class AuthenticationService {
         return new TokenResponse(token, refreshToken,
                 getExpirationDate(token), getExpirationDate(refreshToken));
     }
+
     public void logOut(LogoutRequest logoutRequest){
         String token = logoutRequest.getToken();
         if (token != null && !token.isEmpty()) {

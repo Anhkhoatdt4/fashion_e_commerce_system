@@ -12,10 +12,10 @@ public class ProductCreateRequest {
     private String description;
     private String gender;
     private String season;
-    private UUID brandId;
+    private String brandName;
     private UUID categoryId;
 
-    private List<String> imageUrls;
+    private List<ProductImageRequest> imageUrls;
 
     private List<VariantCreateRequest> variants;
 }

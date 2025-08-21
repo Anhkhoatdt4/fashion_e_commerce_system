@@ -36,3 +36,6 @@ public class Inventory {
         updatedAt = LocalDateTime.now();
     }
 }
+
+// quantityAvailable: Số lượng hàng có sẵn để bán.
+// quantityReserved: Số lượng hàng đã được đặt trước (đang chờ xử lý).

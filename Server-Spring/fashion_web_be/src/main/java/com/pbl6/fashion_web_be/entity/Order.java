@@ -57,3 +57,5 @@ public class Order {
         pending, confirmed, processing, shipped, delivered, cancelled
     }
 }
+
+// order có nhiều order item,

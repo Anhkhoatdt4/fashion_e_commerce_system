@@ -10,5 +10,5 @@ import java.util.UUID;
 @Repository
 public interface UserPreferenceRepository extends JpaRepository<UserPreference, UUID> {
     Optional<UserPreference> findByUserUserId(UUID userId);
-    void deleteByUserId(UUID userId);
+    void deleteByUserUserId(UUID userId);
 }

@@ -29,15 +29,28 @@ public class ProductServiceImpl implements ProductService{
     @Override
     public ProductResponse createProduct(ProductCreateRequest request) {
         Category category = categoryRepository.findById(request.getCategoryId()).orElseThrow(() -> new RuntimeException("Category not found"));
-        Brand brand = brandRepository.findById(request.getBrandId()).orElseThrow(() -> new RuntimeException("Brand not found"));
+        Brand brand;
+        if (request.getBrandName() != null) {
+            if (brandRepository.findByBrandName(request.getBrandName()).isPresent()) {
+                brand = brandRepository.findByBrandName(request.getBrandName())
+                        .orElseThrow(() -> new RuntimeException("Brand not found"));
+            } else {
+                brand = new Brand();
+                brand.setBrandName(request.getBrandName());
+                brand.setDescription("Thương hiệu thể thao nổi tiếng " + request.getBrandName());
+                brandRepository.save(brand);
+            }
+        } else {
+            throw new RuntimeException("Brand information missing");
+        }
         Product product = productMapper.toProduct(request, category, brand);
         List<ProductImage> productImages = request.getImageUrls().stream()
-                .map(url -> {
-                    ProductImage img = new ProductImage();
-                    img.setImageUrl(url);
-                    img.setProduct(product);
-                    return img;
-                }).collect(Collectors.toList());
+                .map(imgReq -> ProductImage.builder()
+                        .imageUrl(imgReq.getImageUrl())
+                        .isMain(Boolean.TRUE.equals(imgReq.getIsMain()))
+                        .product(product)
+                        .build()
+                ).collect(Collectors.toList());
         product.setImages(productImages);
         List<ProductVariant> productVariants = request.getVariants().stream()
                 .map(variantCreateRequest ->

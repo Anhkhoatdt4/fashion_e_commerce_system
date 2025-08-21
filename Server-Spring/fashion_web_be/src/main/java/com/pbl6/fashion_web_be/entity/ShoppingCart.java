@@ -1,9 +1,7 @@
 package com.pbl6.fashion_web_be.entity;
 
 import jakarta.persistence.*;
-import lombok.Data;
-import lombok.EqualsAndHashCode;
-import lombok.ToString;
+import lombok.*;
 
 import java.time.LocalDateTime;
 import java.util.List;
@@ -14,6 +12,9 @@ import java.util.UUID;
 @Data
 @EqualsAndHashCode(exclude = "cartItems")
 @ToString(exclude = "cartItems")
+@Builder
+@AllArgsConstructor
+@NoArgsConstructor
 public class ShoppingCart {
     @Id
     @GeneratedValue(strategy = GenerationType.UUID)

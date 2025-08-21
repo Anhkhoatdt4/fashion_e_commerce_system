@@ -1,6 +1,6 @@
 package com.pbl6.fashion_web_be.repository;
 
-import com.pbl6.fashion_web_be.entity.Brand;
+import com.pbl6.fashion_web_be.entity.Inventory;
 import org.springframework.data.jpa.repository.JpaRepository;
 import org.springframework.stereotype.Repository;
 
@@ -8,6 +8,6 @@ import java.util.Optional;
 import java.util.UUID;
 
 @Repository
-public interface BrandRepository extends JpaRepository<Brand, UUID> {
-    Optional<Brand> findByBrandName(String brandName);
+public interface InventoryRepository extends JpaRepository<Inventory, UUID> {
+    Optional<Inventory> findByVariantVariantId(UUID variantId);
 }
