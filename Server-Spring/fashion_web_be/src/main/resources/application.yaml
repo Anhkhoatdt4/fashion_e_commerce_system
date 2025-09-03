@@ -20,6 +20,15 @@ spring:
     expiration: 3600
     refreshable-duration: 36000
     issuer: auth-service
+  redis:
+    porrt: 6379
+
+  data:
+    redis:
+      host: localhost
+      timeout: 2000
+  cache:
+    type: redis
 
 server:
   port: 8080
