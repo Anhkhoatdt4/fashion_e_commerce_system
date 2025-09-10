@@ -48,6 +48,7 @@ public class CategoryServiceImpl implements CategoryService {
         }
         request.setSortOrder(sortOrderToSet);
         Category category = categoryMapper.toCategory(request, parentCategory);
+        category.setParentCategory(parentCategory);
         categoryRepository.save(category);
         return categoryMapper.toCategoryResponse(category);
     }

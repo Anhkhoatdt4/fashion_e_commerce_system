@@ -16,6 +16,6 @@ public interface CategoryMapper {
     @Mapping(target = "subcategories", ignore = true)
     @Mapping(target = "products", ignore = true)
     @Mapping(target = "createdAt", ignore = true)
-    @Mapping(source = "parentCategoryId", target = "parentCategory.categoryId")
+    @Mapping(target = "parentCategory", ignore = true)
     Category toCategory(CategoryRequest request, @Context Category parentCategory);
 }

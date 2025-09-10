@@ -36,6 +36,9 @@ public class UserAccount {
     private Boolean isActive = true;
     private Boolean isVerified = false;
 
+    @Column(name = "verification_code", length = 6)
+    private String verificationCode;
+
     @Column(name = "created_at")
     private LocalDateTime createdAt;
 

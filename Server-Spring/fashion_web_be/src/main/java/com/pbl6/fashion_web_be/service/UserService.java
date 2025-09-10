@@ -13,6 +13,7 @@ import com.pbl6.fashion_web_be.mapper.UserMapper;
 import com.pbl6.fashion_web_be.repository.RoleRepository;
 import com.pbl6.fashion_web_be.repository.UserRepository;
 import com.pbl6.fashion_web_be.repository.UserProfileRepository;
+import com.pbl6.fashion_web_be.utility.VerificationCodeGenerator;
 import lombok.AccessLevel;
 import lombok.RequiredArgsConstructor;
 import lombok.experimental.FieldDefaults;
@@ -37,6 +38,7 @@ public class UserService {
     RoleRepository roleRepository;
     UserMapper userMapper;
     PasswordEncoder passwordEncoder;
+    EmailService emailService;
 
 
     public UserResponse createUser(UserCreateRequest userCreateRequest){
@@ -50,6 +52,7 @@ public class UserService {
                     .passwordHash(passwordEncoder.encode(userCreateRequest.getPassword()))
                     .isActive(true)
                     .isVerified(false)
+                    .verificationCode(VerificationCodeGenerator.generateCode(6))
                     .build();
                     
             Role userRole = roleRepository.findByRoleNameWithPermissions(PredefinedRole.USER_ROLE)
@@ -63,7 +66,7 @@ public class UserService {
             userAccount.setRoles(new HashSet<>(Collections.singletonList(userRole)));
             userAccount = userRepository.save(userAccount);
             
-            // Tạo UserProfile
+            emailService.sendVerificationEmail(userAccount);
             UserProfile userProfile = UserProfile.builder()
                     .account(userAccount)
                     .fullName(userCreateRequest.getFullName())
@@ -88,8 +91,7 @@ public class UserService {
         UserProfile userProfile = userProfileRepository.findById(UUID.fromString(userId)).orElseThrow(() -> new AppException(ErrorCode.USER_NOT_EXISTED));
         log.info("Updating user with ID: {}", userId);
         userMapper.updateUser(userProfile, userUpdateRequest);
-        
-        // Update account password and roles if provided
+
         if (userUpdateRequest.getPassword() != null) {
             userProfile.getAccount().setPasswordHash(passwordEncoder.encode(userUpdateRequest.getPassword()));
         }
@@ -124,5 +126,22 @@ public class UserService {
         log.info("Fetching user with ID: {}", userId);
         UserProfile userProfile = userProfileRepository.findById(UUID.fromString(userId)).orElseThrow(() -> new AppException(ErrorCode.USER_NOT_EXISTED));
         return userMapper.toUserResponse(userProfile);
+    }
+
+    public boolean verifyEmail(String email, String code) {
+        UserAccount account = userRepository.findByEmail(email)
+                .orElseThrow(() -> new RuntimeException("User not found"));
+
+        if (account.getIsVerified()) {
+            return true;
+        }
+
+        if (account.getVerificationCode().equals(code)) {
+            account.setIsVerified(true);
+            userRepository.save(account);
+            return true;
+        } else {
+            return false;
+        }
     }
 }

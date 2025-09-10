@@ -44,13 +44,7 @@ public class ProductServiceImpl implements ProductService{
             throw new RuntimeException("Brand information missing");
         }
         Product product = productMapper.toProduct(request, category, brand);
-        List<ProductImage> productImages = request.getImageUrls().stream()
-                .map(imgReq -> ProductImage.builder()
-                        .imageUrl(imgReq.getImageUrl())
-                        .isMain(Boolean.TRUE.equals(imgReq.getIsMain()))
-                        .product(product)
-                        .build()
-                ).collect(Collectors.toList());
+        List<ProductImage> productImages = mapProductImages(request.getImageUrls(), product);
         product.setImages(productImages);
         List<ProductVariant> productVariants = request.getVariants().stream()
                 .map(variantCreateRequest ->
@@ -95,5 +89,23 @@ public class ProductServiceImpl implements ProductService{
                 .stream()
                 .map(product -> productMapper.toProductResponse((Product) product))
                 .collect(Collectors.toList());
+    }
+
+    private List<ProductImage> mapProductImages(List<ProductImageRequest> imagesRequest, Product product) {
+        List<ProductImage> productImages = new ArrayList<>();
+        boolean hasMain = imagesRequest.stream().anyMatch(img -> Boolean.TRUE.equals(img.getIsMain()));
+
+        for (int i = 0; i < imagesRequest.size(); i++) {
+            ProductImageRequest imgReq = imagesRequest.get(i);
+            boolean isMain = hasMain ? Boolean.TRUE.equals(imgReq.getIsMain()) : (i == 0);
+
+            productImages.add(ProductImage.builder()
+                    .imageUrl(imgReq.getImageUrl())
+                    .isMain(isMain)
+                    .product(product)
+                    .build());
+        }
+
+        return productImages;
     }
 }

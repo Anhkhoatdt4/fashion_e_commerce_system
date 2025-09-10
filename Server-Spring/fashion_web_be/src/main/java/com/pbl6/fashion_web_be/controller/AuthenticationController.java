@@ -23,8 +23,6 @@ public class AuthenticationController {
 
     @PostMapping("/register")
     public ApiResponse<UserResponse> createUser(@RequestBody @Valid UserCreateRequest request) {
-        log.info("=== ENTERING REGISTER CONTROLLER ===");
-        log.info("Creating user with request: {}", request);
         try {
             UserResponse result = userService.createUser(request);
             log.info("User created successfully: {}", result);
@@ -35,6 +33,16 @@ public class AuthenticationController {
         } catch (Exception e) {
             log.error("Error creating user: ", e);
             throw e;
+        }
+    }
+
+    @PostMapping("/verify")
+    public ApiResponse<String> verify(@RequestBody VerifyRequest request) {
+        boolean success = userService.verifyEmail(request.getEmail(), request.getCode());
+        if (success) {
+            return ApiResponse.<String>builder().message("Email verified successfully!").build();
+        } else {
+            return  ApiResponse.<String>builder().message("Invalid verification code").build();
         }
     }
 
@@ -145,15 +153,6 @@ public class AuthenticationController {
                         .username(username)
                         .expiryTime(expiry)
                         .build())
-                .build();
-    }
-
-    @GetMapping("/test")
-    public ApiResponse<String> test() {
-        log.info("=== TEST ENDPOINT CALLED ===");
-        return ApiResponse.<String>builder()
-                .result("Controller is working!")
-                .message("Test successful")
                 .build();
     }
 }
