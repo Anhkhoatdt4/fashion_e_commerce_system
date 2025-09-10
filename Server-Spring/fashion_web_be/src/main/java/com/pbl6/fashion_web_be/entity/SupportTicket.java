@@ -20,8 +20,8 @@ public class SupportTicket {
     private UUID ticketId;
 
     @ManyToOne(fetch = FetchType.LAZY)
-    @JoinColumn(name = "user_id", nullable = false)
-    private User user; // Người tạo ticket
+    @JoinColumn(name = "profile_id", nullable = false)
+    private UserProfile user; // Người tạo ticket
 
     @Column(name = "subject", nullable = false, length = 200)
     private String subject; // Tiêu đề hỗ trợ
@@ -73,8 +73,8 @@ class SupportMessage {
     private SupportTicket ticket;
 
     @ManyToOne(fetch = FetchType.LAZY)
-    @JoinColumn(name = "user_id", nullable = false)
-    private User sender; // Ai gửi message
+    @JoinColumn(name = "profile_id", nullable = false)
+    private UserProfile sender; // Ai gửi message
 
     @Column(columnDefinition = "TEXT", nullable = false)
     private String content;

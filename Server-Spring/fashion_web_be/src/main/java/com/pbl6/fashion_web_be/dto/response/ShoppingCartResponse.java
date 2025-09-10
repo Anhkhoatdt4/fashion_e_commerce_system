@@ -2,7 +2,7 @@ package com.pbl6.fashion_web_be.dto.response;
 
 import com.pbl6.fashion_web_be.entity.CartItem;
 import com.pbl6.fashion_web_be.entity.ShoppingCart;
-import com.pbl6.fashion_web_be.entity.User;
+import com.pbl6.fashion_web_be.entity.UserProfile;
 import lombok.AllArgsConstructor;
 import lombok.Builder;
 import lombok.Data;
@@ -22,7 +22,7 @@ public class ShoppingCartResponse {
     private UUID userId;
     private List<CartItemResponse> items;
 
-    public ShoppingCart toEntity(User user, List<CartItem> cartItems) {
+    public ShoppingCart toEntity(UserProfile user, List<CartItem> cartItems) {
         return ShoppingCart.builder()
                 .cartId(cartId)
                 .user(user)

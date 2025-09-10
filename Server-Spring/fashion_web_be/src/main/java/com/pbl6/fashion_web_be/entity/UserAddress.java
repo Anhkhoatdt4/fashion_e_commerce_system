@@ -21,8 +21,8 @@ public class UserAddress {
     UUID addressId;
 
     @ManyToOne(fetch = FetchType.LAZY)
-    @JoinColumn(name = "user_id", nullable = false)
-    User user;
+    @JoinColumn(name = "profile_id", nullable = false)
+    UserProfile user;
 
     @Enumerated(EnumType.STRING)
     @Column(name = "address_type")

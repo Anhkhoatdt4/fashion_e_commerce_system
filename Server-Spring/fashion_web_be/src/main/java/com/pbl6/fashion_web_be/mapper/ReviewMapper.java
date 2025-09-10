@@ -11,7 +11,7 @@ public interface ReviewMapper {
         ReviewResponse res = new ReviewResponse();
         res.setReviewId(review.getReviewId());
         res.setProductId(review.getProduct().getProductId());
-        res.setUserId(review.getUser().getUserId());
+        res.setUserId(review.getUser().getProfileId());
         res.setRating(review.getRating());
         res.setComment(review.getComment());
         return res;

@@ -9,7 +9,7 @@ import org.mapstruct.Mapping;
 @Mapper(componentModel = "spring")
 public interface UserAddressMapper {
 
-    @Mapping(source = "user.userId", target = "userId")
+    @Mapping(source = "user.profileId", target = "userId")
     UserAddressResponse toUserAddressResponse(UserAddress address);
 
     default UserAddress toUserAddress(UserAddressRequest request) {

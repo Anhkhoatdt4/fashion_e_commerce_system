@@ -1,5 +1,6 @@
 package com.pbl6.fashion_web_be.entity;
 
+import com.fasterxml.jackson.annotation.JsonManagedReference;
 import jakarta.persistence.*;
 import lombok.*;
 import lombok.experimental.FieldDefaults;
@@ -16,7 +17,8 @@ import java.util.UUID;
 @AllArgsConstructor
 @Builder
 @FieldDefaults(level = AccessLevel.PRIVATE)
-@ToString(exclude = {"userRoles"})
+@ToString(exclude = {"users", "permissions"})
+@EqualsAndHashCode(exclude = {"users", "permissions"})
 public class Role {
     @Id
     @GeneratedValue(generator = "UUID")
@@ -32,14 +34,15 @@ public class Role {
     LocalDateTime createdAt;
 
     @ManyToMany(mappedBy = "roles")
-    Set<User> users;
+    Set<UserAccount> users;
 
-    @ManyToMany(fetch = FetchType.EAGER, cascade = {CascadeType.PERSIST, CascadeType.MERGE})
+    @ManyToMany(fetch = FetchType.EAGER, cascade = {CascadeType.MERGE})
             @JoinTable(
                     name = "role_permissions",
                     joinColumns = @JoinColumn(name = "role_id"),
                     inverseJoinColumns = @JoinColumn(name = "permission_id")
             )
+            @JsonManagedReference
     Set<Permission> permissions;
 
     @PrePersist

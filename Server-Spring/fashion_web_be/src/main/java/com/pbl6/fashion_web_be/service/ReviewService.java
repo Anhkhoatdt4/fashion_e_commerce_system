@@ -4,11 +4,11 @@ import com.pbl6.fashion_web_be.dto.request.ReviewRequest;
 import com.pbl6.fashion_web_be.dto.response.ReviewResponse;
 import com.pbl6.fashion_web_be.entity.Product;
 import com.pbl6.fashion_web_be.entity.Review;
-import com.pbl6.fashion_web_be.entity.User;
+import com.pbl6.fashion_web_be.entity.UserProfile;
 import com.pbl6.fashion_web_be.mapper.ReviewMapper;
 import com.pbl6.fashion_web_be.repository.ProductRepository;
 import com.pbl6.fashion_web_be.repository.ReviewRepository;
-import com.pbl6.fashion_web_be.repository.UserRepository;
+import com.pbl6.fashion_web_be.repository.UserProfileRepository;
 import lombok.RequiredArgsConstructor;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
@@ -22,19 +22,21 @@ import java.util.stream.Collectors;
 public class ReviewService {
     private final ReviewRepository reviewRepo;
     private final ProductRepository productRepo;
-    private final UserRepository userRepo;
+    private final UserProfileRepository userProfileRepo;
     private final ReviewMapper mapper;
 
     @Transactional
     public ReviewResponse addReview(ReviewRequest request, String userEmail) {
         Product product = productRepo.findById(request.getProductId())
                 .orElseThrow(() -> new RuntimeException("Product not found"));
-        User user = userRepo.findByEmail(userEmail)
-                .orElseThrow(() -> new RuntimeException("User not found"));
+        
+        // Find UserProfile through UserAccount email
+        UserProfile userProfile = userProfileRepo.findByAccountEmail(userEmail)
+                .orElseThrow(() -> new RuntimeException("User profile not found"));
 
         Review review = new Review();
         review.setProduct(product);
-        review.setUser(user);
+        review.setUser(userProfile);
         review.setRating(request.getRating());
         review.setComment(request.getComment());
 

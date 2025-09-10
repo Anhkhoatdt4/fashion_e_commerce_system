@@ -21,8 +21,8 @@ public class UserPreference {
     private UUID preferenceId;
 
     @OneToOne(fetch = FetchType.LAZY)
-    @JoinColumn(name = "user_id", nullable = false)
-    private User user;
+    @JoinColumn(name = "profile_id", nullable = false)
+    private UserProfile user;
 
     @Column(name = "preferred_size", length = 10)
     private String preferredSize;

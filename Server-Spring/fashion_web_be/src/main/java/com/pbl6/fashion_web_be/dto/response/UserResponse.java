@@ -2,7 +2,6 @@ package com.pbl6.fashion_web_be.dto.response;
 
 import java.util.Set;
 
-import com.pbl6.fashion_web_be.entity.User;
 import lombok.*;
 import lombok.experimental.FieldDefaults;
 

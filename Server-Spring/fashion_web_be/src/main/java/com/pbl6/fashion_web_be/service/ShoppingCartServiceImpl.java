@@ -2,10 +2,10 @@ package com.pbl6.fashion_web_be.service;
 
 import com.pbl6.fashion_web_be.dto.response.ShoppingCartResponse;
 import com.pbl6.fashion_web_be.entity.ShoppingCart;
-import com.pbl6.fashion_web_be.entity.User;
+import com.pbl6.fashion_web_be.entity.UserProfile;
 import com.pbl6.fashion_web_be.mapper.CartItemMapper;
 import com.pbl6.fashion_web_be.repository.ShoppingCartRepository;
-import com.pbl6.fashion_web_be.repository.UserRepository;
+import com.pbl6.fashion_web_be.repository.UserProfileRepository;
 import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
 import org.springframework.stereotype.Service;
@@ -21,17 +21,17 @@ import java.util.stream.Collectors;
 public class ShoppingCartServiceImpl implements ShoppingCartService {
     private final ShoppingCartRepository cartRepo;
     private final CartItemMapper cartItemMapper;
-    private final UserRepository userRepo;
+    private final UserProfileRepository userProfileRepo;
 
     @Override
     @Transactional
     public ShoppingCartResponse getCartByUser(UUID userId) {
-        User user = userRepo.findById(userId)
-                .orElseThrow(() -> new RuntimeException("User not found"));
-        ShoppingCart cart = cartRepo.findByUserUserId(userId)
+        UserProfile userProfile = userProfileRepo.findById(userId)
+                .orElseThrow(() -> new RuntimeException("User profile not found"));
+        ShoppingCart cart = cartRepo.findByUserProfileId(userId)
                 .orElseGet(() -> {
                     log.debug("No cart found for user {}, creating a new one", userId);
-                    return createCartForUser(userId).toEntity(user, Collections.emptyList());
+                    return createCartForUser(userId).toEntity(userProfile, Collections.emptyList());
                 });
         ShoppingCartResponse res = new ShoppingCartResponse();
         res.setCartId(cart.getCartId());
@@ -45,7 +45,7 @@ public class ShoppingCartServiceImpl implements ShoppingCartService {
     @Override
     @Transactional
     public ShoppingCartResponse createCartForUser(UUID userId) {
-        User user = userRepo.findById(userId)
+        UserProfile user = userProfileRepo.findById(userId)
                 .orElseThrow(() -> new RuntimeException("User not found"));
         ShoppingCart cart = new ShoppingCart();
         cart.setUser(user);

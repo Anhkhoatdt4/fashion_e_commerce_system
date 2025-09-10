@@ -3,7 +3,7 @@ package com.pbl6.fashion_web_be.service;
 import com.pbl6.fashion_web_be.dto.request.LogoutRequest;
 import com.pbl6.fashion_web_be.dto.response.TokenResponse;
 import com.pbl6.fashion_web_be.entity.InvalidatedToken;
-import com.pbl6.fashion_web_be.entity.User;
+import com.pbl6.fashion_web_be.entity.UserAccount;
 import com.pbl6.fashion_web_be.repository.InvalidatedTokenRepository;
 import com.pbl6.fashion_web_be.repository.UserRepository;
 import io.jsonwebtoken.Claims;
@@ -43,7 +43,7 @@ public class AuthenticationService {
     private final InvalidatedTokenRepository invalidatedTokenRepository;
 
     public String generateToken(String email){
-        User user = userRepository.findByEmail(email)
+        UserAccount user = userRepository.findByEmail(email)
                 .orElseThrow(() -> new UsernameNotFoundException("User not found"));
         return Jwts.builder().issuer(ISSUER)
                 .subject(email)
@@ -52,13 +52,13 @@ public class AuthenticationService {
                 .signWith(getSigningKey())
                 .claim("email", email)
                 .claim("username", user.getUsername())
-                .claim("userId", user.getUserId())
+                .claim("userId", user.getAccountId())
                 .claim("roles", user.getRoles().stream().map(role -> "ROLE_" + role.getRoleName()).toList())
                 .claim("scope", buildScope(user))
                 .compact();
     }
 
-    private String buildScope(User user){
+    private String buildScope(UserAccount user){
         StringJoiner stringJoiner = new StringJoiner(",");
         if (!CollectionUtils.isEmpty(user.getRoles())){
             user.getRoles().forEach(role -> {

@@ -23,7 +23,7 @@ public class Order {
 
     @ManyToOne(fetch = FetchType.LAZY)
     @JoinColumn(name = "user_id")
-    private User user;
+    private UserProfile user;
 
     @Enumerated(EnumType.STRING)
     private OrderStatus orderStatus = OrderStatus.pending;

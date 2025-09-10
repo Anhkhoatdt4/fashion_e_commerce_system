@@ -2,11 +2,11 @@ package com.pbl6.fashion_web_be.service;
 
 import com.pbl6.fashion_web_be.dto.request.UserAddressRequest;
 import com.pbl6.fashion_web_be.dto.response.UserAddressResponse;
-import com.pbl6.fashion_web_be.entity.User;
+import com.pbl6.fashion_web_be.entity.UserProfile;
 import com.pbl6.fashion_web_be.entity.UserAddress;
 import com.pbl6.fashion_web_be.mapper.UserAddressMapper;
 import com.pbl6.fashion_web_be.repository.UserAddressRepository;
-import com.pbl6.fashion_web_be.repository.UserRepository;
+import com.pbl6.fashion_web_be.repository.UserProfileRepository;
 import lombok.AccessLevel;
 import lombok.RequiredArgsConstructor;
 import lombok.experimental.FieldDefaults;
@@ -22,15 +22,15 @@ import java.util.stream.Collectors;
 public class UserAddressServiceImpl implements UserAddressService {
 
     UserAddressMapper userAddressMapper;
-    UserRepository userRepository;
+    UserProfileRepository userProfileRepository;
     UserAddressRepository userAddressRepository;
 
     @Override
     public UserAddressResponse createAddress(UserAddressRequest request) {
-        User user = userRepository.findById(request.getUserId())
-                .orElseThrow(() -> new RuntimeException("User not found"));
+        UserProfile userProfile = userProfileRepository.findById(request.getUserId())
+                .orElseThrow(() -> new RuntimeException("User profile not found"));
         UserAddress address = userAddressMapper.toUserAddress(request);
-        address.setUser(user);
+        address.setUser(userProfile);
         return userAddressMapper.toUserAddressResponse(userAddressRepository.save(address));
     }
 
@@ -52,7 +52,7 @@ public class UserAddressServiceImpl implements UserAddressService {
 
     @Override
     public List<UserAddressResponse> getAddressesByUser(UUID userId) {
-        return userAddressRepository.findByUserUserId(userId)
+        return userAddressRepository.findByUserProfileId(userId)
                 .stream()
                 .map(userAddressMapper::toUserAddressResponse)
                 .collect(Collectors.toList());

@@ -40,13 +40,16 @@ public class AuthenticationController {
 
     @PostMapping("/login")
     public ApiResponse<TokenResponse> login(@RequestBody AuthenticationRequest authenticationRequest) {
+        System.out.println("=== ENTERING LOGIN CONTROLLER ===");
         TokenResponse tokenResponse = authenticationService.generateTokenAndRefreshToken(authenticationRequest.getEmail());
+        System.out.println("Generated TokenResponse: " + tokenResponse);
         TokenResponse authenticationResponse = TokenResponse.builder()
                 .token(tokenResponse.getToken())
                 .refreshToken(tokenResponse.getRefreshToken())
                 .expiryTime(tokenResponse.getExpiryTime())
                 .refreshTokenExpiryTime(tokenResponse.getRefreshTokenExpiryTime())
                 .build();
+        System.out.println("AuthenticationResponse: " + authenticationResponse);
         return ApiResponse.<TokenResponse>builder()
                 .message("Login successful")
                 .result(authenticationResponse)

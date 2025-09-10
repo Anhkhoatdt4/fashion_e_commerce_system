@@ -19,8 +19,8 @@ public class Transaction {
     private Order order;
 
     @ManyToOne(fetch = FetchType.LAZY)
-    @JoinColumn(name = "user_id", nullable = false)
-    private User user; // Người thực hiện thanh toán
+    @JoinColumn(name = "profile_id", nullable = false)
+    private UserProfile user; // Người thực hiện thanh toán
 
     @Column(name = "payment_method", nullable = false, length = 50)
     private String paymentMethod; // Ví dụ: VNPay, Momo, Credit Card

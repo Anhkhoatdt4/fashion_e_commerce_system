@@ -21,8 +21,8 @@ public class Wishlist {
     private UUID wishlistId;
 
     @ManyToOne(fetch = FetchType.LAZY)
-    @JoinColumn(name = "user_id", nullable = false)
-    private User user;
+    @JoinColumn(name = "profile_id", nullable = false)
+    private UserProfile  user;
 
     @Column(name = "created_at", updatable = false)
     private LocalDateTime createdAt;

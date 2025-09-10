@@ -8,4 +8,5 @@ import java.util.UUID;
 
 public interface ReviewRepository extends JpaRepository<Review, UUID> {
     List<Review> findByProductProductId(UUID productId);
+    List<Review> findByUserProfileId(UUID profileId);
 }

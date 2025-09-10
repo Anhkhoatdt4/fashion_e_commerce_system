@@ -11,7 +11,7 @@ import org.mapstruct.Mapping;
 @Mapper(componentModel = "spring", imports = {com.fasterxml.jackson.databind.ObjectMapper.class, com.fasterxml.jackson.databind.JsonNode.class})
 public interface UserPreferenceMapper {
 
-    @Mapping(source = "user.userId", target = "userId")
+    @Mapping(source = "user.profileId", target = "userId")
     @Mapping(target = "notificationSettings", expression = "java(pref.getNotificationSettings() != null ? pref.getNotificationSettings().toString() : null)")
     UserPreferenceResponse toResponse(UserPreference pref);
 
