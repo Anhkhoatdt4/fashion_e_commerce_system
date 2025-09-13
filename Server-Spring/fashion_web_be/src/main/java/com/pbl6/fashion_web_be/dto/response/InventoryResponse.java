@@ -13,7 +13,7 @@ import java.util.UUID;
 @NoArgsConstructor
 @AllArgsConstructor
 public class InventoryResponse {
-    private String inventoryId;
+    private UUID inventoryId;
     private UUID variantId;
     private Integer quantityAvailable;
     private Integer quantityReserved;

@@ -2,12 +2,18 @@ package com.pbl6.fashion_web_be.entity;
 
 import jakarta.persistence.*;
 import lombok.Data;
+import lombok.EqualsAndHashCode;
+import lombok.ToString;
+
+import java.math.BigDecimal;
 import java.time.LocalDateTime;
 import java.util.UUID;
 
 @Entity
 @Table(name = "transactions")
 @Data
+@EqualsAndHashCode(exclude = {"order", "user"})
+@ToString(exclude = {"order", "user"})
 public class Transaction {
     @Id
     @GeneratedValue(strategy = GenerationType.UUID)
@@ -25,8 +31,8 @@ public class Transaction {
     @Column(name = "payment_method", nullable = false, length = 50)
     private String paymentMethod; // Ví dụ: VNPay, Momo, Credit Card
 
-    @Column(name = "amount", nullable = false)
-    private Double amount; // Số tiền giao dịch
+    @Column(name = "amount", nullable = false, precision = 12, scale = 2)
+    private BigDecimal amount; // Số tiền giao dịch
 
     @Enumerated(EnumType.STRING)
     @Column(name = "status", nullable = false)

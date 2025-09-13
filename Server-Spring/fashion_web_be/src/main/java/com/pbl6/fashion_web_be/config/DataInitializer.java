@@ -25,10 +25,24 @@ public class DataInitializer implements CommandLineRunner{
 
     private final RoleRepository roleRepository;
     private final PermissionRepository permissionRepository;
+    public static final String SUPER_ADMIN_ROLE = "SUPER_ADMIN";
+    public static final String STORE_ADMIN_ROLE = "STORE_ADMIN";
+    public static final String CUSTOMER_ROLE = "CUSTOMER";
 
     private static final Map<String, List<String>> MODULE_PERMISSIONS = Map.of(
-            "USER_MODULE", List.of("USER_READ", "USER_WRITE"),
-            "PRODUCT_MODULE", List.of("PRODUCT_CREATE", "PRODUCT_READ")
+            // Module quản lý cửa hàng
+            "SHOP_MANAGEMENT", List.of("SHOP_CREATE", "SHOP_READ", "SHOP_UPDATE", "SHOP_DELETE"),
+            "PRODUCT_MANAGEMENT", List.of("PRODUCT_CREATE", "PRODUCT_READ", "PRODUCT_UPDATE", "PRODUCT_DELETE"),
+            "ORDER_MANAGEMENT", List.of("ORDER_CREATE", "ORDER_READ", "ORDER_UPDATE", "ORDER_DELETE"),
+            "CATEGORY_MANAGEMENT", List.of("CATEGORY_CREATE", "CATEGORY_READ", "CATEGORY_UPDATE", "CATEGORY_DELETE"),
+            "INVENTORY_MANAGEMENT", List.of("INVENTORY_READ", "INVENTORY_UPDATE"),
+
+            // Module admin hệ thống (Super Admin)
+            "USER_MANAGEMENT", List.of("USER_CREATE", "USER_READ", "USER_UPDATE", "USER_DELETE"),
+            "ROLE_MANAGEMENT", List.of("ROLE_CREATE", "ROLE_READ", "ROLE_UPDATE", "ROLE_DELETE"),
+
+            // Module khách hàng
+            "CUSTOMER_ACCESS", List.of("PROFILE_UPDATE", "ORDER_VIEW", "CART_MANAGE", "REVIEW_CREATE")
     );
 
     @Override
@@ -56,35 +70,34 @@ public class DataInitializer implements CommandLineRunner{
     }
 
     private void createDefaultRoles() {
+        // ADMIN role với tất cả permissions
         Role adminRole = roleRepository.findByRoleName(PredefinedRole.ADMIN_ROLE)
                 .orElseGet(() -> {
                     Role role = Role.builder()
                             .roleName(PredefinedRole.ADMIN_ROLE)
+                            .description("Super Administrator - Full system access")
                             .permissions(new HashSet<>(permissionRepository.findAll()))
                             .build();
                     log.info("Creating ADMIN role with all permissions");
                     return roleRepository.save(role);
                 });
 
-        Role userRole = roleRepository.findByRoleName("USER")
+        // USER role với customer permissions
+        Role userRole = roleRepository.findByRoleName(PredefinedRole.USER_ROLE)
                 .orElseGet(() -> {
-                    Role r = new Role();
-                    r.setRoleName("USER");
-                    List<String> userPerms = MODULE_PERMISSIONS.get("USER_MODULE");
-                    HashSet<Permission> perms = new HashSet<>(permissionRepository.findAllById(userPerms));
-                    r.setPermissions(perms);
-                    log.info("Creating USER role with USER_MODULE permissions");
-                    return roleRepository.save(r);
+                    List<String> userPerms = MODULE_PERMISSIONS.get("CUSTOMER_ACCESS");
+                    Set<Permission> permissions = userPerms.stream()
+                            .map(name -> permissionRepository.findByName(name)
+                                    .orElseThrow(() -> new RuntimeException("Permission not found: " + name)))
+                            .collect(Collectors.toSet());
+                    
+                    Role role = Role.builder()
+                            .roleName(PredefinedRole.USER_ROLE)
+                            .description("Customer")
+                            .permissions(permissions)
+                            .build();
+                    log.info("Creating USER role with customer permissions");
+                    return roleRepository.save(role);
                 });
-        Set<Permission> perms = MODULE_PERMISSIONS.get("USER_MODULE").stream()
-                .map(name -> permissionRepository.findByName(name)
-                        .orElseThrow(() -> new RuntimeException("Permission not found: " + name)))
-                .collect(Collectors.toSet());
-        adminRole.setPermissions(new HashSet<>(permissionRepository.findAll()));
-        userRole.setPermissions(perms);
-
-        roleRepository.save(userRole);
-
-        roleRepository.save(adminRole);
     }
 }

@@ -4,9 +4,12 @@ import jakarta.persistence.*;
 import lombok.AllArgsConstructor;
 import lombok.Builder;
 import lombok.Data;
+import lombok.EqualsAndHashCode;
 import lombok.NoArgsConstructor;
+import lombok.ToString;
 
 import java.time.LocalDateTime;
+import java.util.List;
 import java.util.UUID;
 
 @Entity
@@ -15,6 +18,8 @@ import java.util.UUID;
 @NoArgsConstructor
 @AllArgsConstructor
 @Builder
+@EqualsAndHashCode(exclude = {"user", "orders"})
+@ToString(exclude = {"user", "orders"})
 public class UserAddress {
     @Id
     @GeneratedValue(strategy = GenerationType.UUID)
@@ -54,6 +59,10 @@ public class UserAddress {
 
     @Column(name = "is_default")
     private Boolean isDefault = false;
+
+    // Quan hệ với Orders sử dụng address này
+    @OneToMany(mappedBy = "shippingAddress", fetch = FetchType.LAZY)
+    private List<Order> orders;
 
     @Column(name = "created_at")
     private LocalDateTime createdAt;

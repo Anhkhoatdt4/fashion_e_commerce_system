@@ -6,6 +6,7 @@ import lombok.EqualsAndHashCode;
 import lombok.ToString;
 
 import java.time.LocalDateTime;
+import java.util.UUID;
 
 @Entity
 @Table(name = "inventories")
@@ -16,7 +17,7 @@ public class Inventory {
     @Id
     @GeneratedValue(strategy = GenerationType.UUID)
     @Column(name = "inventory_id")
-    private String inventoryId;
+    private UUID inventoryId;
     @OneToOne(fetch = FetchType.LAZY)
     @JoinColumn(name = "variant_id", nullable = false)
     private ProductVariant variant;
