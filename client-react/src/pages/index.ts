@@ -2,6 +2,10 @@
 export { default as Home } from './Home';
 export { default as Login } from './Login';
 export { default as Register } from './Register';
+export { default as Women } from './Women';
+export { default as Men } from './Men';
+export { default as About } from './About';
+export { default as Custom } from './Custom';
 
 // Placeholder exports for pages to be created later
 // export { default as Products } from './Products';

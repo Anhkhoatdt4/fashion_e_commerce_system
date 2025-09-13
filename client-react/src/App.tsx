@@ -3,7 +3,7 @@ import { BrowserRouter as Router, Routes, Route } from 'react-router-dom';
 import { Provider } from 'react-redux';
 import { store } from './store';
 import { Header, Footer } from './components';
-import { Home, Login, Register } from './pages';
+import { Home, Login, Register, Women, Men, About, Custom } from './pages';
 import { useDispatch, useSelector } from 'react-redux';
 import { verifyToken } from './store/authSlice';
 import { fetchCart } from './store/cartSlice';
@@ -37,6 +37,10 @@ const AppContent: React.FC = () => {
         <main className="flex-1">
           <Routes>
             <Route path="/" element={<Home />} />
+            <Route path="/women" element={<Women />} />
+            <Route path="/men" element={<Men />} />
+            <Route path="/about" element={<About />} />
+            <Route path="/custom" element={<Custom />} />
             <Route path="/login" element={<Login />} />
             <Route path="/register" element={<Register />} />
             {/* 
@@ -47,6 +51,7 @@ const AppContent: React.FC = () => {
             <Route path="/checkout" element={<Checkout />} />
             <Route path="/profile" element={<Profile />} />
             */}
+
 
             <Route path="*" element={<PageNotFound/>} />
           </Routes>
